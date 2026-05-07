@@ -164,6 +164,43 @@ Route::get('/clinics', [AdminClinicController::class, 'index'])->name('clinics')
         Route::get('/', [AdminDoctorController::class, 'index'])->name('index');
     });
 });
+// ==================== Clinic Subscription Routes ====================
+Route::middleware(['auth', 'role:clinic'])->prefix('clinic')->name('clinic.')->group(function () {
+    
+    // صفحة انتظار الموافقة
+    Route::get('/pending-approval', function () {
+        return view('clinic.pending_approval');
+    })->name('pending.approval');
+    
+    // نظام الاشتراكات
+    Route::get('/subscription/plans', [App\Http\Controllers\Clinic\SubscriptionController::class, 'plans'])
+        ->name('subscription.plans');
+    
+    Route::post('/subscription/subscribe', [App\Http\Controllers\Clinic\SubscriptionController::class, 'subscribe'])
+        ->name('subscription.subscribe');
+    
+    Route::get('/subscription/history', [App\Http\Controllers\Clinic\SubscriptionController::class, 'history'])
+        ->name('subscription.history');
+    
+    Route::post('/subscription/use-trial', [App\Http\Controllers\Clinic\SubscriptionController::class, 'useTrial'])
+        ->name('subscription.use-trial');
+});
+
+// ==================== Admin Approval Routes ====================
+Route::middleware(['super.admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    Route::get('/clinics/pending', [App\Http\Controllers\Admin\AdminClinicController::class, 'pending'])
+        ->name('clinics.pending');
+    
+    Route::post('/clinics/{id}/approve', [App\Http\Controllers\Admin\AdminClinicController::class, 'approve'])
+        ->name('clinics.approve');
+    
+    Route::post('/clinics/{id}/reject', [App\Http\Controllers\Admin\AdminClinicController::class, 'reject'])
+        ->name('clinics.reject');
+    
+    Route::get('/subscriptions',[App\Http\Controllers\Admin\AdminClinicController::class, 'index'])
+        ->name('subscriptions.index');
+});
 
 // ==================== 9. Routes إضافية للحفاظ على التوافق ====================
 // هذه الـ routes للحفاظ على التوافق مع الكود القديم

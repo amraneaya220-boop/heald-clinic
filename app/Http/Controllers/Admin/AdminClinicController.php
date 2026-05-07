@@ -49,9 +49,12 @@ class AdminClinicController extends Controller
                 'location' => $request->location,
                 'phone' => $request->phone,
                 'commission_rate' => $request->commission_rate ?? 10,
-                'subscription' => $request->subscription ?? 'monthly',
                 'status' => 'active',
-                'paid_until' => now()->addMonths($request->subscription == 'yearly' ? 12 : 1),
+                'is_approved' => true,  // إذا أضافها الأدمن مباشرة تكون موافقة
+                'approved_at' => now(),
+                'subscription_status' => 'trial',
+                'trial_used' => 0,
+                'max_trials' => 2
             ]);
 
             DB::commit();
@@ -73,11 +76,9 @@ class AdminClinicController extends Controller
     public function renew(Request $request, $id)
     {
         try {
-            $clinic = Clinic::findOrFail($id);
-            
-            // تجديد الاشتراك
-            $months = $clinic->subscription == 'yearly' ? 12 : 1;
-            $clinic->paid_until = now()->addMonths($months);
+             $clinic = Clinic::findOrFail($id);
+            $clinic->subscription_end_date = now()->addYear();
+            $clinic->subscription_status = 'active';
             $clinic->save();
 
             return response()->json([
@@ -92,6 +93,77 @@ class AdminClinicController extends Controller
             ], 500);
         }
     }
+    // قائمة العيادات المنتظرة الموافقة
+public function pending()
+    {
+        $pendingClinics = Clinic::with('user')
+            ->where('is_approved', false)
+            ->orWhereNull('is_approved')
+            ->orderBy('created_at', 'asc')
+            ->get();
+        
+        $approvedCount = Clinic::where('is_approved', true)->count();
+        $pendingCount = Clinic::where('is_approved', false)->count();
+        $totalCount = Clinic::count();
+        
+        return view('super_admin.clinics_pending', compact('pendingClinics', 'approvedCount', 'pendingCount', 'totalCount'));
+    }
+
+// الموافقة على عيادة
+ public function approve($id)
+    {
+        try {
+            $clinic = Clinic::findOrFail($id);
+            $clinic->is_approved = true;
+            $clinic->approved_at = now();
+            $clinic->subscription_status = 'trial';  // تبدأ كتجربة
+            $clinic->trial_used = 0;
+            $clinic->max_trials = 2;
+            $clinic->status = 'active';
+            $clinic->save();
+            
+            // يمكن إرسال إشعار للعيادة هنا
+            // Notification::send($clinic->user, new ClinicApprovedNotification($clinic));
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Clinic approved successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error approving clinic: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+
+// رفض عيادة
+ public function reject($id)
+    {
+        try {
+            $clinic = Clinic::findOrFail($id);
+            
+            // حذف المستخدم المرتبط
+            if ($clinic->user) {
+                $clinic->user->delete();
+            }
+            
+            // حذف العيادة
+            $clinic->delete();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Clinic rejected and removed successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error rejecting clinic: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
 
     public function destroy($id)
     {

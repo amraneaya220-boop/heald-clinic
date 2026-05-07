@@ -272,12 +272,21 @@
 <a href="{{ route('admin.ads.index') }}" class="{{ request()->routeIs('admin.ads*') ? 'active' : '' }}">
     <i class="fas fa-ad"></i> <span id="nav_ads">Ads</span>
 </a>
+
 <a href="{{ route('admin.payments.index') }}" class="{{ request()->routeIs('admin.payments*') ? 'active' : '' }}">
     <i class="fas fa-credit-card"></i> <span id="nav_payments">Payments</span>
 </a>
 <a href="{{ route('admin.settings.index') }}" class="{{ request()->routeIs('admin.settings') ? 'active' : '' }}">
     <i class="fas fa-cog"></i> <span id="nav_settings">Settings</span>
 </a>
+<a href="{{ route('admin.clinics.pending') }}">
+        <i class="fas fa-clock"></i>
+        <span>Pending Approvals</span>
+        @if($pendingCount ?? 0 > 0)
+            <span class="badge">{{ $pendingCount }}</span>
+        @endif
+    </a>
+
 
 </a>
     </div>

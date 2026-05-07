@@ -93,7 +93,7 @@ class DashboardController extends Controller
         } catch (\Exception $e) {
             $todayReviews = 0;
         }
-        
+        $pendingClinicsCount = Clinic::where('is_approved', false)->count();
         return view('super_admin.dashboard', compact(
             'totalClinics',
             'totalDoctors',
@@ -105,7 +105,8 @@ class DashboardController extends Controller
             'pendingBookings',
             'recentBookings',
             'todayBookings',
-            'todayReviews'
+            'todayReviews',
+            'pendingClinicsCount'
         ));
     }
 }

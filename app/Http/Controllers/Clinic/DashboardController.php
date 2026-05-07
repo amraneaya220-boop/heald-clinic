@@ -18,7 +18,9 @@ use Carbon\Carbon;
 class DashboardController extends Controller
 {
     /**
-     * عرض لوحة التحكم الرئيسية للعيادة
+     * عرض لوحة التحكم الرئيسية للعيادة مع التحقق من:
+     * 1. موافقة الأدمن
+     * 2. حالة الاشتراك (تجربة مجانية أو اشتراك مدفوع)
      */
     public function index()
     {
@@ -30,6 +32,28 @@ class DashboardController extends Controller
         
         if (!$clinic) {
             return redirect()->to('/clinic/settings')->withErrors(['error' => 'لم يتم العثور على بيانات العيادة الخاصة بك. يرجى إكمال التسجيل.']);
+        }
+        
+        // ✅ ==================== التحقق من موافقة الأدمن ====================
+        if (!$clinic->is_approved) {
+            return redirect()->route('clinic.pending.approval')
+                ->with('warning', 'Your clinic is waiting for admin approval. You will be notified once approved.');
+        }
+        
+        // ✅ ==================== التحقق من حالة الاشتراك ====================
+        $hasActiveSubscription = $this->checkSubscriptionStatus($clinic);
+        
+        if (!$hasActiveSubscription) {
+            $remainingTrials = $clinic->max_trials - $clinic->trial_used;
+            
+            if ($remainingTrials <= 0) {
+                // لا توجد تجارب متبقية ولا اشتراك فعال
+                return redirect()->route('clinic.subscription.plans')
+                    ->with('error', 'Your free trials have been exhausted. Please subscribe to continue using the platform.');
+            }
+            
+            // عرض تحذير للمستخدم أن التجربة ستنتهي قريباً
+            session()->flash('trial_warning', "You have {$remainingTrials} free trial" . ($remainingTrials > 1 ? 's' : '') . " remaining. Consider subscribing to avoid service interruption.");
         }
         
         $clinicId = $clinic->id;
@@ -143,12 +167,65 @@ class DashboardController extends Controller
             $recentNotifications = collect([]);
         }
         
+        // ✅ معلومات الاشتراك والتجربة للـ View
+        $subscriptionInfo = [
+            'status' => $clinic->subscription_status,
+            'trial_used' => $clinic->trial_used,
+            'max_trials' => $clinic->max_trials,
+            'remaining_trials' => $clinic->max_trials - $clinic->trial_used,
+            'subscription_end_date' => $clinic->subscription_end_date,
+            'is_active_subscription' => $hasActiveSubscription,
+            'is_approved' => $clinic->is_approved,
+        ];
+        
         return view('clinic.dashboard', compact(
             'totalDoctors', 'activeDoctors', 'totalPatients', 'activePatients',
             'totalAppointments', 'pendingAppointments', 'acceptedAppointments',
             'rejectedAppointments', 'revenue', 'recentAppointments',
-            'reviews', 'avgRating', 'unreadNotifications', 'recentNotifications'
+            'reviews', 'avgRating', 'unreadNotifications', 'recentNotifications',
+            'clinic', 'subscriptionInfo' // إضافة متغيرات الاشتراك
         ));
+    }
+    
+    /**
+     * ✅ التحقق من حالة الاشتراك للعيادة
+     */
+    private function checkSubscriptionStatus($clinic)
+    {
+        // التحقق من وجود اشتراك فعال
+        if ($clinic->subscription_status === 'active') {
+            // التحقق من صلاحية الاشتراك (عدم انتهاء الصلاحية)
+            if ($clinic->subscription_end_date && $clinic->subscription_end_date > now()) {
+                return true;
+            } else {
+                // الاشتراك منتهي الصلاحية
+                $clinic->subscription_status = 'expired';
+                $clinic->save();
+                return false;
+            }
+        }
+        
+        // التحقق من وجود تجربة مجانية متاحة
+        if ($clinic->subscription_status === 'trial') {
+            if ($clinic->trial_used < $clinic->max_trials) {
+                return true;
+            } else {
+                // انتهت التجارب المجانية
+                $clinic->subscription_status = 'expired';
+                $clinic->save();
+                return false;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * ✅ صفحة انتظار موافقة الأدمن
+     */
+    public function pendingApproval()
+    {
+        return view('clinic.pending_approval');
     }
 
     /**
@@ -161,6 +238,15 @@ class DashboardController extends Controller
         
         if (!$clinic) {
             return response()->json(['success' => false, 'message' => 'Clinic not found'], 404);
+        }
+        
+        // ✅ التحقق من الاشتراك
+        if (!$this->checkSubscriptionStatus($clinic)) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Subscription required',
+                'redirect' => route('clinic.subscription.plans')
+            ], 403);
         }
         
         $clinicId = $clinic->id;
@@ -187,7 +273,7 @@ class DashboardController extends Controller
             $pendingAppointments = 0;
         }
         
-        $acceptedAppointments = 0; // يمكن حسابها حسب الحاجة
+        $acceptedAppointments = 0;
         $revenue = 0;
         
         return response()->json([
@@ -200,7 +286,11 @@ class DashboardController extends Controller
                 'totalAppointments' => $totalAppointments,
                 'pendingAppointments' => $pendingAppointments,
                 'acceptedAppointments' => $acceptedAppointments,
-                'revenue' => $revenue
+                'revenue' => $revenue,
+                'subscription' => [
+                    'status' => $clinic->subscription_status,
+                    'remaining_trials' => $clinic->max_trials - $clinic->trial_used,
+                ]
             ]
         ]);
     }

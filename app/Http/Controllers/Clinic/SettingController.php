@@ -199,4 +199,5 @@ class SettingController extends Controller
             'image_url' => Storage::url($path)
         ]);
     }
+   
 }

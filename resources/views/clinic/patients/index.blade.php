@@ -5,82 +5,562 @@
 @section('content')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<div class="header">
-    <h1>👥 Manage Patients</h1>
-    <p>Add, edit, and manage all registered patients</p>
-</div>
+<style>
+    /* Stats Cards */
+    .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid #f1f5f9;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+    
+    .stat-info h4 {
+        font-size: 13px;
+        color: #64748b;
+        margin-bottom: 8px;
+    }
+    
+    .stat-info .number {
+        font-size: 32px;
+        font-weight: 800;
+        color: #1e293b;
+    }
+    
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .stat-icon i {
+        font-size: 24px;
+        color: white;
+    }
+    
+    /* Search Bar */
+    .search-bar {
+        background: white;
+        padding: 15px 20px;
+        border-radius: 20px;
+        margin-bottom: 25px;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid #f1f5f9;
+    }
+    
+    .search-input {
+        flex: 1;
+        padding: 12px 18px;
+        border: 2px solid #e2e8f0;
+        border-radius: 50px;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.2s;
+        min-width: 200px;
+    }
+    
+    .search-input:focus {
+        border-color: #6366f1;
+    }
+    
+    .filter-select {
+        padding: 12px 18px;
+        border: 2px solid #e2e8f0;
+        border-radius: 50px;
+        background: white;
+        font-size: 14px;
+        cursor: pointer;
+        outline: none;
+    }
+    
+    .filter-select:focus {
+        border-color: #6366f1;
+    }
+    
+    /* Add Patient Card */
+    .add-patient-card {
+        background: white;
+        border-radius: 24px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid #f1f5f9;
+    }
+    
+    .add-patient-card h2 {
+        color: #1e293b;
+        font-size: 18px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #eef2ff;
+    }
+    
+    .add-patient-card h2 i {
+        color: #6366f1;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    .input-group label {
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 13px;
+    }
+    
+    .input-group input,
+    .input-group select {
+        padding: 10px 14px;
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.2s;
+    }
+    
+    .input-group input:focus,
+    .input-group select:focus {
+        border-color: #6366f1;
+    }
+    
+    .btn-add {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 20px;
+        width: 100%;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+    
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+    }
+    
+    /* Patients Table */
+    .patients-table-container {
+        background: white;
+        border-radius: 24px;
+        padding: 25px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid #f1f5f9;
+    }
+    
+    .patients-table-container h2 {
+        color: #1e293b;
+        font-size: 18px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .patients-table-container h2 i {
+        color: #6366f1;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th, td {
+        padding: 14px 12px;
+        text-align: left;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 13px;
+    }
+    
+    th {
+        background: #f8fafc;
+        color: #1e293b;
+        font-weight: 600;
+        font-size: 12px;
+    }
+    
+    .patient-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    
+    .status-active {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+    
+    .status-inactive {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-icon {
+        padding: 6px 14px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    
+    .btn-edit {
+        background: #6366f1;
+        color: white;
+    }
+    
+    .btn-edit:hover {
+        background: #4f46e5;
+        transform: translateY(-1px);
+    }
+    
+    .btn-delete {
+        background: #ef4444;
+        color: white;
+    }
+    
+    .btn-delete:hover {
+        background: #dc2626;
+        transform: translateY(-1px);
+    }
+    
+    .btn-status {
+        background: #f59e0b;
+        color: white;
+    }
+    
+    .btn-status:hover {
+        background: #d97706;
+        transform: translateY(-1px);
+    }
+    
+    .no-results {
+        text-align: center;
+        padding: 50px;
+        color: #94a3b8;
+        font-size: 14px;
+    }
+    
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(4px);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    
+    .modal-content {
+        background: white;
+        width: 450px;
+        max-width: 90%;
+        padding: 30px;
+        border-radius: 28px;
+        position: relative;
+        animation: modalPop 0.3s ease;
+    }
+    
+    .modal-content h3 {
+        color: #1e293b;
+        margin-bottom: 20px;
+        font-size: 22px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .modal-content h3 i {
+        color: #6366f1;
+    }
+    
+    .modal-content input,
+    .modal-content select {
+        width: 100%;
+        padding: 12px 16px;
+        margin-bottom: 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.2s;
+    }
+    
+    .modal-content input:focus,
+    .modal-content select:focus {
+        border-color: #6366f1;
+    }
+    
+    .modal-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+    
+    .modal-buttons button {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+    
+    .btn-save:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-cancel {
+        background: #f1f5f9;
+        color: #64748b;
+    }
+    
+    .btn-cancel:hover {
+        background: #e2e8f0;
+    }
+    
+    @keyframes modalPop {
+        from {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    
+    /* RTL Support */
+    body.rtl th, body.rtl td {
+        text-align: right;
+    }
+    
+    body.rtl .stat-info {
+        text-align: right;
+    }
+    
+    body.rtl .action-buttons {
+        justify-content: flex-start;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .stats-cards {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        th, td {
+            padding: 10px 8px;
+            font-size: 12px;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .btn-icon {
+            text-align: center;
+        }
+    }
+</style>
 
-<!-- STATS CARDS -->
-<div class="stats-cards">
-    <div class="stat-card"><h3>Total Patients</h3><div class="number" id="totalPatients">0</div></div>
-    <div class="stat-card"><h3>Active Patients</h3><div class="number" id="activePatients">0</div></div>
-    <div class="stat-card"><h3>New This Month</h3><div class="number" id="newPatients">0</div></div>
-    <div class="stat-card"><h3>Appointments</h3><div class="number" id="totalAppointments">0</div></div>
-</div>
-
-<!-- SEARCH & FILTER -->
-<div class="search-bar">
-    <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search by name, email, or phone...">
-    <select class="filter-select" id="statusFilter">
-        <option value="all">All Status</option>
-        <option value="active">Active</option>
-        <option value="inactive">Inactive</option>
-    </select>
-</div>
-
-<!-- ADD PATIENT FORM -->
-<div class="add-patient-card">
-    <h2>➕ Add New Patient</h2>
-    <div class="form-grid">
-        <div class="input-group">
-            <label>Full Name</label>
-            <input type="text" id="patientName" placeholder="Full name">
+<div class="main-content-wrapper">
+    <!-- STATS CARDS -->
+    <div class="stats-cards">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h4>Total Patients</h4>
+                <div class="number" id="totalPatients">0</div>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
         </div>
-        <div class="input-group">
-            <label>Email</label>
-            <input type="email" id="patientEmail" placeholder="email@example.com">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h4>Active Patients</h4>
+                <div class="number" id="activePatients">0</div>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-user-check"></i>
+            </div>
         </div>
-        <div class="input-group">
-            <label>Phone</label>
-            <input type="tel" id="patientPhone" placeholder="+213 XX XXX XXXX">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h4>New This Month</h4>
+                <div class="number" id="newPatients">0</div>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-calendar-plus"></i>
+            </div>
         </div>
-        <div class="input-group">
-            <label>Date of Birth</label>
-            <input type="date" id="patientDob">
-        </div>
-        <div class="input-group">
-            <label>Gender</label>
-            <select id="patientGender">
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label>Address</label>
-            <input type="text" id="patientAddress" placeholder="City, Address">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h4>Total Appointments</h4>
+                <div class="number" id="totalAppointments">0</div>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
         </div>
     </div>
-    <button class="btn-add" onclick="addPatient()">+ Add Patient</button>
-</div>
-
-<!-- PATIENTS TABLE -->
-<div class="patients-table-container">
-    <h2>📋 Patients List</h2>
-    <div style="overflow-x: auto;">
-        <table id="patientsTable">
-            <thead>
-                <tr><th>Avatar</th><th>Name</th><th>Email</th><th>Phone</th><th>Date of Birth</th><th>Gender</th><th>Status</th><th>Actions</th></tr>
-            </thead>
-            <tbody id="patientsTableBody"></tbody>
-        </table>
+    
+    <!-- SEARCH & FILTER -->
+    <div class="search-bar">
+        <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search by name, email, or phone...">
+        <select class="filter-select" id="statusFilter">
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+        </select>
     </div>
-    <div id="noResults" class="no-results" style="display: none;">📭 No patients found matching your search</div>
+    
+    <!-- ADD PATIENT FORM -->
+    <div class="add-patient-card">
+        <h2><i class="fas fa-user-plus"></i> Add New Patient</h2>
+        <div class="form-grid">
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" id="patientName" placeholder="Full name">
+            </div>
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="patientEmail" placeholder="email@example.com">
+            </div>
+            <div class="input-group">
+                <label>Phone</label>
+                <input type="tel" id="patientPhone" placeholder="+213 XX XXX XXXX">
+            </div>
+            <div class="input-group">
+                <label>Date of Birth</label>
+                <input type="date" id="patientDob">
+            </div>
+            <div class="input-group">
+                <label>Gender</label>
+                <select id="patientGender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Address</label>
+                <input type="text" id="patientAddress" placeholder="City, Address">
+            </div>
+        </div>
+        <button class="btn-add" onclick="addPatient()">
+            <i class="fas fa-plus"></i> Add Patient
+        </button>
+    </div>
+    
+    <!-- PATIENTS TABLE -->
+    <div class="patients-table-container">
+        <h2><i class="fas fa-list"></i> Patients List</h2>
+        <div style="overflow-x: auto;">
+            <table id="patientsTable">
+                <thead>
+                    <tr>
+                        <th>Avatar</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Date of Birth</th>
+                        <th>Gender</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="patientsTableBody"></tbody>
+            </table>
+        </div>
+        <div id="noResults" class="no-results" style="display: none;">
+            <i class="fas fa-inbox"></i> No patients found matching your search
+        </div>
+    </div>
 </div>
 
 <!-- EDIT MODAL -->
 <div id="editModal" class="modal">
     <div class="modal-content">
-        <h3>✏️ Edit Patient</h3>
+        <h3><i class="fas fa-edit"></i> Edit Patient</h3>
         <input type="text" id="editName" placeholder="Full Name">
         <input type="email" id="editEmail" placeholder="Email">
         <input type="tel" id="editPhone" placeholder="Phone">
@@ -91,317 +571,11 @@
         </select>
         <input type="text" id="editAddress" placeholder="Address">
         <div class="modal-buttons">
-            <button class="btn-save" onclick="saveEdit()">Save</button>
-            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-save" onclick="saveEdit()"><i class="fas fa-save"></i> Save</button>
+            <button class="btn-cancel" onclick="closeModal()"><i class="fas fa-times"></i> Cancel</button>
         </div>
     </div>
 </div>
-
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .header {
-        background: white;
-        padding: 20px 25px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        margin-bottom: 25px;
-    }
-    .header h1 {
-        color: #0f2b5c;
-        font-size: 24px;
-        margin-bottom: 5px;
-    }
-    .header p {
-        color: #64748b;
-        font-size: 13px;
-    }
-
-    .stats-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 15px;
-        margin-bottom: 25px;
-    }
-    .stat-card {
-        background: white;
-        padding: 15px;
-        border-radius: 18px;
-        text-align: center;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        border: 1px solid #e2e8f0;
-    }
-    .stat-card h3 {
-        color: #64748b;
-        font-size: 12px;
-        margin-bottom: 6px;
-    }
-    .stat-card .number {
-        font-size: 28px;
-        font-weight: bold;
-        color: #2563eb;
-    }
-
-    .search-bar {
-        background: white;
-        padding: 12px 18px;
-        border-radius: 18px;
-        margin-bottom: 20px;
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-    }
-    .search-input {
-        flex: 1;
-        padding: 8px 14px;
-        border: 2px solid #e2e8f0;
-        border-radius: 30px;
-        font-size: 13px;
-        outline: none;
-        transition: all 0.2s;
-    }
-    .search-input:focus {
-        border-color: #2563eb;
-    }
-    .filter-select {
-        padding: 8px 14px;
-        border: 2px solid #e2e8f0;
-        border-radius: 30px;
-        background: white;
-        font-size: 13px;
-        cursor: pointer;
-    }
-
-    .add-patient-card {
-        background: white;
-        border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        margin-bottom: 25px;
-    }
-    .add-patient-card h2 {
-        color: #0f2b5c;
-        font-size: 18px;
-        margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding-bottom: 8px;
-        border-bottom: 2px solid #e2e8f0;
-    }
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-        gap: 12px;
-    }
-    .input-group {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-    .input-group label {
-        font-weight: 600;
-        color: #1e293b;
-        font-size: 12px;
-    }
-    .input-group input,
-    .input-group select {
-        padding: 8px 12px;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        font-size: 13px;
-        outline: none;
-    }
-    .input-group input:focus,
-    .input-group select:focus {
-        border-color: #2563eb;
-    }
-    .btn-add {
-        background: #16a34a;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 30px;
-        font-weight: 600;
-        cursor: pointer;
-        margin-top: 15px;
-        width: 100%;
-        font-size: 14px;
-    }
-    .btn-add:hover {
-        background: #15803d;
-    }
-
-    .patients-table-container {
-        background: white;
-        border-radius: 20px;
-        padding: 18px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        overflow-x: auto;
-    }
-    .patients-table-container h2 {
-        color: #0f2b5c;
-        font-size: 18px;
-        margin-bottom: 15px;
-        padding-left: 10px;
-        border-left: 4px solid #f59e0b;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 13px;
-    }
-    th, td {
-        padding: 10px 8px;
-        text-align: left;
-        border-bottom: 1px solid #e2e8f0;
-    }
-    th {
-        background: #f8fafc;
-        color: #1e3a8a;
-        font-weight: 600;
-        font-size: 12px;
-    }
-    .patient-avatar {
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        background: #16a34a;
-        color: white;
-        font-weight: bold;
-    }
-    .status-badge {
-        display: inline-block;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 500;
-    }
-    .status-active {
-        background: #dcfce7;
-        color: #16a34a;
-    }
-    .status-inactive {
-        background: #fee2e2;
-        color: #dc2626;
-    }
-    .action-buttons {
-        display: flex;
-        gap: 5px;
-        flex-wrap: wrap;
-    }
-    .btn-icon {
-        padding: 4px 10px;
-        border: none;
-        border-radius: 16px;
-        cursor: pointer;
-        font-size: 11px;
-        font-weight: 500;
-        transition: all 0.2s;
-    }
-    .btn-edit {
-        background: #2563eb;
-        color: white;
-    }
-    .btn-edit:hover {
-        background: #1e40af;
-    }
-    .btn-delete {
-        background: #ef4444;
-        color: white;
-    }
-    .btn-delete:hover {
-        background: #dc2626;
-    }
-    .btn-status {
-        background: #f59e0b;
-        color: white;
-    }
-    .btn-status:hover {
-        background: #d97706;
-    }
-    .no-results {
-        text-align: center;
-        padding: 30px;
-        color: #94a3b8;
-        font-size: 14px;
-    }
-
-    /* MODAL */
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    }
-    .modal-content {
-        background: white;
-        width: 400px;
-        padding: 25px;
-        border-radius: 24px;
-        position: relative;
-        animation: modalPop 0.3s ease;
-    }
-    .modal-content h3 {
-        color: #0f2b5c;
-        margin-bottom: 20px;
-        font-size: 20px;
-    }
-    .modal-content input, .modal-content select {
-        width: 100%;
-        padding: 10px 14px;
-        margin-bottom: 15px;
-        border: 2px solid #e2e8f0;
-        border-radius: 14px;
-        font-size: 14px;
-        outline: none;
-    }
-    .modal-content input:focus, .modal-content select:focus {
-        border-color: #2563eb;
-    }
-    .modal-buttons {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
-    }
-    .modal-buttons button {
-        flex: 1;
-        padding: 10px;
-        border: none;
-        border-radius: 30px;
-        cursor: pointer;
-        font-weight: 600;
-    }
-    .btn-save {
-        background: #16a34a;
-        color: white;
-    }
-    .btn-cancel {
-        background: #64748b;
-        color: white;
-    }
-    @keyframes modalPop {
-        from { transform: scale(0.9); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-    }
-</style>
 
 <script>
     let allPatients = [];
@@ -473,10 +647,11 @@
             let statusClass = patient.status === 'active' ? 'status-active' : 'status-inactive';
             let statusText = patient.status === 'active' ? '🟢 Active' : '🔴 Inactive';
             let dobFormatted = patient.dob ? new Date(patient.dob).toLocaleDateString() : '—';
+            let avatarLetter = patient.name ? patient.name.charAt(0).toUpperCase() : '👤';
             
             tbody.innerHTML += `
                 <tr>
-                    <td><div class="patient-avatar">👤</div></td>
+                    <td><div class="patient-avatar">${escapeHtml(avatarLetter)}</div></td>
                     <td><strong>${escapeHtml(patient.name)}</strong></td>
                     <td>${escapeHtml(patient.email)}</td>
                     <td>${escapeHtml(patient.phone)}</td>
@@ -484,11 +659,17 @@
                     <td>${patient.gender || '—'}</td>
                     <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                     <td class="action-buttons">
-                        <button class="btn-icon btn-edit" onclick="openEditModal(${patient.id})">✏️ Edit</button>
-                        <button class="btn-icon btn-delete" onclick="deletePatient(${patient.id})">🗑️ Delete</button>
-                        <button class="btn-icon btn-status" onclick="togglePatientStatus(${patient.id})">🔄 Status</button>
+                        <button class="btn-icon btn-edit" onclick="openEditModal(${patient.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn-icon btn-delete" onclick="deletePatient(${patient.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                        <button class="btn-icon btn-status" onclick="togglePatientStatus(${patient.id})">
+                            <i class="fas fa-sync-alt"></i> Status
+                        </button>
                     </td>
-                <table>
+                </tr>
             `;
         });
     }
@@ -521,7 +702,6 @@
             });
             
             if (res.ok) {
-                // Clear form
                 document.getElementById('patientName').value = '';
                 document.getElementById('patientEmail').value = '';
                 document.getElementById('patientPhone').value = '';
@@ -529,7 +709,6 @@
                 document.getElementById('patientGender').value = 'Male';
                 document.getElementById('patientAddress').value = '';
                 
-                // Refresh the list
                 await fetchPatients();
                 alert(`✅ Patient "${name}" added successfully!`);
             } else {
@@ -626,6 +805,7 @@
             });
             if (res.ok) {
                 await fetchPatients();
+                alert('✅ Patient status updated!');
             } else {
                 alert('Error toggling status');
             }
@@ -660,6 +840,12 @@
             closeModal();
         }
     }
+
+    // Listen for language changes from layout
+    window.addEventListener('languageChanged', function(e) {
+        // Refresh table to update status text if needed
+        renderPatients(allPatients);
+    });
 
     // ========== INITIAL LOAD ==========
     fetchPatients();

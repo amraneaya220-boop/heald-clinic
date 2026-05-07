@@ -54,7 +54,8 @@ class RegisterController extends Controller
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'phone' => $request->phone,
-                'address' => $request->address
+                'address' => $request->address,
+                'status' => 'pending'
             ]);
         } elseif ($data['role'] === 'doctor') {
             Doctor::create([

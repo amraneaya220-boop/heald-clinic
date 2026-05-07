@@ -38,37 +38,49 @@ class AnnouncementController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        $clinic = Auth::user()->clinic;
-        if (!$clinic) {
-            return response()->json(['success' => false, 'message' => 'عيادة غير موجودة'], 400);
+        try {
+            $clinic = Auth::user()->clinic;
+            if (!$clinic) {
+                return response()->json(['success' => false, 'message' => 'عيادة غير موجودة'], 400);
+            }
+
+            $data = $request->validate([
+                'title'       => 'required|string|max:255',
+                'description' => 'required|string',
+                'type'        => 'required|in:info,warning,success,danger',
+                'expires_at'  => 'nullable|date',
+            ]);
+
+            $data['clinic_id'] = $clinic->id;
+            $announcement = Announcement::create($data);
+
+            return response()->json(['success' => true, 'data' => $announcement]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $data = $request->validate([
-            'title'       => 'required|string|max:255',
-            'description' => 'required|string',
-            'type'        => 'required|in:info,warning,success,danger',
-            'expires_at'  => 'nullable|date',
-        ]);
-
-        $data['clinic_id'] = $clinic->id;
-        $announcement = Announcement::create($data);
-
-        return response()->json(['success' => true, 'data' => $announcement]);
-    }catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'error' => $e->getMessage()
-        ]);
     }
-
 
     public function destroy(Announcement $announcement): JsonResponse
     {
-        $clinic = Auth::user()->clinic;
-        if ($announcement->clinic_id != $clinic->id) {
-            return response()->json(['success' => false, 'message' => 'غير مصرح'], 403);
+        try {
+            $clinic = Auth::user()->clinic;
+            if ($announcement->clinic_id != $clinic->id) {
+                return response()->json(['success' => false, 'message' => 'غير مصرح'], 403);
+            }
+            $announcement->delete();
+            return response()->json(['success' => true, 'message' => 'Announcement deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
         }
-        $announcement->delete();
-        return response()->json(['success' => true]);
+    }
+    public function pendingApproval()
+    {
+        return view('clinic.pending_approval');
     }
 }

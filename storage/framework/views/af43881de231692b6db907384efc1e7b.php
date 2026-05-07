@@ -5,253 +5,633 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title><?php echo $__env->yieldContent('title', 'Clinic Dashboard'); ?> - MediEase Clinic</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+        
         body {
-            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDQwIDQwIj48cGF0aCBkPSJNMjAgMjBhMTAgMTAgMCAwIDEgMjAgMCAxMCAxMCAwIDAgMS0yMCAweiIgZmlsbD0icmdiYSgxMDAsMTUwLDIwMCwwLjA1KSIvPjxwYXRoIGQ9Ik0wIDIwYTEwIDEwIDAgMCAxIDIwIDAgMTAgMTAgMCAwIDEtMjAgMHoiIGZpbGw9InJnYmEoMTAwLDE1MCwyMDAsMC4wNSkiLz48cGF0aCBkPSJNMzAgMTBhMTAgMTAgMCAwIDEgMjAgMCAxMCAxMCAwIDAgMS0yMCAweiIgZmlsbD0icmdiYSgxMDAsMTUwLDIwMCwwLjA1KSIvPjwvc3ZnPg==');
-            background-color: #0a1e3d;
-            background-repeat: repeat;
-            background-size: 40px;
+            font-family: 'Inter', 'Tajawal', sans-serif;
+            background: #f5f7fb;
+            min-height: 100vh;
         }
-        body::before {
-            content: "";
+        
+        body.rtl {
+            direction: rtl;
+            font-family: 'Tajawal', 'Inter', sans-serif;
+        }
+        
+        /* ==================== TOP BAR ==================== */
+        .top-bar {
+            background: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: fixed;
+            top: 0;
+            left: 280px;
+            right: 0;
+            z-index: 99;
+        }
+        
+        body.rtl .top-bar {
+            left: 0;
+            right: 280px;
+        }
+        
+        @media (max-width: 992px) {
+            .top-bar {
+                left: 0;
+            }
+            body.rtl .top-bar {
+                right: 0;
+            }
+        }
+        
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: #f1f5f9;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #64748b;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+        
+        .menu-toggle:hover {
+            background: #e2e8f0;
+        }
+        
+        @media (max-width: 992px) {
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            border-radius: 50px;
+            padding: 10px 20px;
+            gap: 10px;
+            width: 300px;
+        }
+        
+        .search-box i {
+            color: #94a3b8;
+        }
+        
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+        }
+        
+        .language-selector {
+            display: flex;
+            gap: 5px;
+            background: #f1f5f9;
+            padding: 5px;
+            border-radius: 50px;
+        }
+        
+        .lang-btn {
+            background: transparent;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+        
+        .lang-btn.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            background: #f1f5f9;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .notification-icon:hover {
+            background: #e2e8f0;
+        }
+        
+        .notification-icon .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 50%;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+        
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .user-details h4 {
+            font-size: 14px;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+        
+        .user-details p {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        
+        /* ==================== SIDEBAR ==================== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: white;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.05);
+            padding: 30px 0;
+            transition: all 0.3s;
+            z-index: 100;
+            overflow-y: auto;
+        }
+        
+        body.rtl .sidebar {
+            left: auto;
+            right: 0;
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                left: -280px;
+            }
+            body.rtl .sidebar {
+                right: -280px;
+                left: auto;
+            }
+            .sidebar.open {
+                left: 0;
+            }
+            body.rtl .sidebar.open {
+                right: 0;
+                left: auto;
+            }
+        }
+        
+        .sidebar-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(10,30,61,0.85), rgba(18,43,82,0.9));
-            backdrop-filter: blur(2px);
-            z-index: -1;
+            background: rgba(0,0,0,0.4);
+            z-index: 99;
+            display: none;
         }
-        body.rtl { direction: rtl; }
-        body.rtl .sidebar { left: auto; right: -300px; }
-        body.rtl .sidebar.open { left: auto; right: 0; }
-        body.rtl .table-container h2,
-        body.rtl .reviews-header h2,
-        body.rtl .notifications h2 { border-left: none; border-right: 5px solid #f59e0b; padding-left: 0; padding-right: 12px; }
-        body.rtl .notif-item { border-left: none; border-right: 4px solid #2563eb; }
-        body.rtl .action-group { display: flex; flex-direction: row-reverse; gap: 5px; }
-        body.rtl th, body.rtl td { text-align: right; }
-
-        .top-bar {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            padding: 12px 25px;
+        
+        .sidebar-overlay.active {
+            display: block;
+        }
+        
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #eef2ff;
+        }
+        
+        .logo-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 16px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
+            justify-content: center;
+            margin: 0 auto 12px;
         }
-        .top-bar-left { display: flex; align-items: center; gap: 15px; }
-        .top-bar-right { display: flex; align-items: center; gap: 18px; }
-        .language-selector { display: flex; gap: 8px; background: rgba(255,255,255,0.5); padding: 4px; border-radius: 50px; backdrop-filter: blur(4px); }
-        .lang-btn { background: transparent; border: none; padding: 8px 18px; border-radius: 40px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s; color: #1e3a8a; }
-        .lang-btn.active { background: linear-gradient(135deg,#2563eb,#1e40af); color: white; box-shadow: 0 4px 12px rgba(37,99,235,0.4); transform: scale(1.02); }
-        .lang-btn:hover:not(.active) { background: rgba(37,99,235,0.15); transform: translateY(-2px); }
-        .home-icon { background: linear-gradient(135deg,#f59e0b,#e67e22); border: none; font-size: 14px; font-weight: 600; cursor: pointer; color: white; padding: 10px 24px; border-radius: 40px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(245,158,11,0.3); }
-        .home-icon:hover { background: linear-gradient(135deg,#e67e22,#d35400); transform: translateY(-2px); }
-        .login-icon { background: linear-gradient(135deg,#e74c3c,#c0392b); border: none; font-size: 14px; font-weight: 600; cursor: pointer; color: white; padding: 10px 24px; border-radius: 40px; display: flex; align-items: center; gap: 8px; }
-        .login-icon:hover { background: linear-gradient(135deg,#c0392b,#a93226); transform: translateY(-2px); }
-        .menu-toggle { background: #f8fafc; border: none; font-size: 26px; cursor: pointer; color: #1e3a8a; width: 44px; height: 44px; border-radius: 30px; }
-        .menu-toggle:hover { background: #2563eb; color: white; }
-        .page-title { font-size: 24px; font-weight: 700; background: white; color: #1e3a8a; padding: 8px 28px; border-radius: 50px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); letter-spacing: -0.3px; text-align: center; border: 1px solid rgba(37,99,235,0.2); }
-        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); z-index: 200; display: none; }
-        .sidebar-overlay.active { display: block; }
-        .sidebar { position: fixed; top: 0; left: -300px; width: 300px; height: 100vh; background: linear-gradient(145deg,#0a1e3d,#122b52); color: white; padding: 80px 20px 25px; transition: left 0.3s; z-index: 201; overflow-y: auto; }
-        .sidebar.open { left: 0; }
-        .sidebar h2 { text-align: center; margin-bottom: 35px; font-size: 24px; background: linear-gradient(135deg,#fff,#bfdbfe); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .sidebar ul li { list-style: none; margin: 8px 0; }
-        .sidebar ul li a { color: #e2e8f0; text-decoration: none; display: block; padding: 12px 18px; border-radius: 14px; transition: all 0.3s; font-weight: 500; }
-        .sidebar ul li a:hover, .sidebar ul li a.active { background: #2563eb; color: white; }
-        .main-content { margin-top: 70px; padding: 25px 35px; }
-        .header { background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); padding: 25px 30px; border-radius: 28px; margin-bottom: 30px; }
-        .header h1 { color: #0f2b5c; font-size: 28px; margin-bottom: 6px; }
-        .header p { color: #64748b; font-size: 14px; }
-        .notification-area { margin-top: 18px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .bell-icon { background: linear-gradient(135deg,#f1f5f9,#fff); padding: 10px 24px; border-radius: 50px; font-weight: 600; color: #1e3a8a; }
-        .badge { background: #ef4444; color: white; border-radius: 40px; padding: 2px 10px; font-size: 12px; margin-left: 10px; }
-        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 22px; margin-bottom: 35px; }
-        .card { background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); padding: 22px; border-radius: 24px; text-align: center; transition: all 0.3s; }
-        .card:hover { transform: translateY(-5px); border-color: #2563eb; }
-        .card h3 { color: #475569; font-size: 14px; margin-bottom: 12px; }
-        .number { font-size: 36px; font-weight: 800; background: linear-gradient(135deg,#2563eb,#1e3a8a); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .table-container, .reviews-section, .notifications { background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-radius: 24px; padding: 20px; margin-bottom: 35px; overflow-x: auto; }
-        .table-container h2, .reviews-header h2, .notifications h2 { color: #0f2b5c; margin-bottom: 18px; font-size: 20px; padding-left: 12px; border-left: 5px solid #f59e0b; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 14px 10px; text-align: left; border-bottom: 1px solid #eef2ff; font-size: 13px; }
-        th { background: #fafcff; color: #1e3a8a; font-weight: 700; }
-        .status-pending { color: #f59e0b; background: #fffbeb; padding: 4px 12px; border-radius: 30px; display: inline-block; }
-        .status-accepted { color: #16a34a; background: #f0fdf4; padding: 4px 12px; border-radius: 30px; display: inline-block; }
-        .status-rejected { color: #dc2626; background: #fef2f2; padding: 4px 12px; border-radius: 30px; display: inline-block; }
-        .action-btn { padding: 5px 14px; border: none; border-radius: 30px; cursor: pointer; font-size: 11px; font-weight: 600; margin: 0 3px; }
-        .btn-accept { background: #16a34a; color: white; }
-        .btn-reject { background: #dc2626; color: white; }
-        .reviews-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-        .rating-summary { display: flex; gap: 15px; background: #f8fafc; padding: 10px 20px; border-radius: 60px; }
-        .avg-rating { font-size: 28px; font-weight: 800; color: #f59e0b; }
-        .review-card { background: #fafcff; border-radius: 20px; padding: 18px; margin-bottom: 14px; border: 1px solid #eef2ff; }
-        .reviewer-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
-        .reviewer-name { font-weight: 700; color: #0f2b5c; }
-        .review-stars { color: #f59e0b; letter-spacing: 2px; }
-        .delete-review { background: #fee2e2; color: #dc2626; border: none; padding: 5px 14px; border-radius: 30px; cursor: pointer; }
-        .notif-item { background: #fafcff; padding: 14px 16px; border-radius: 18px; margin-bottom: 10px; display: flex; gap: 12px; border-left: 4px solid #2563eb; }
-        .clear-btn { background: linear-gradient(135deg,#ef4444,#dc2626); color: white; border: none; padding: 10px 22px; border-radius: 40px; cursor: pointer; margin-top: 15px; }
-        @media (max-width:768px){ .cards{grid-template-columns:repeat(2,1fr);} .main-content{padding:15px;} .page-title{font-size:16px;padding:5px 16px;} .home-icon,.login-icon{padding:6px 16px;font-size:12px;} }
+        
+        .logo-icon i {
+            font-size: 28px;
+            color: white;
+        }
+        
+        .sidebar-header h2 {
+            font-size: 18px;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .sidebar-header p {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 0 15px;
+        }
+        
+        .sidebar-menu li {
+            margin: 5px 0;
+        }
+        
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .sidebar-menu li a i {
+            width: 22px;
+            font-size: 16px;
+        }
+        
+        .sidebar-menu li a:hover,
+        .sidebar-menu li a.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        
+        .sidebar-menu .logout-item {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eef2ff;
+        }
+        
+        /* ==================== MAIN CONTENT ==================== */
+        .main-content {
+            margin-left: 280px;
+            padding: 85px 30px 30px;
+            min-height: 100vh;
+        }
+        
+        body.rtl .main-content {
+            margin-left: 0;
+            margin-right: 280px;
+        }
+        
+        @media (max-width: 992px) {
+            .main-content {
+                margin-left: 0;
+            }
+            body.rtl .main-content {
+                margin-right: 0;
+            }
+        }
+        
+        /* ==================== ALERTS ==================== */
+        .alert-success {
+            background: #10b981;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .alert-error, .alert-danger {
+            background: #ef4444;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .alert-warning {
+            background: #f59e0b;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .alert-info {
+            background: #3b82f6;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 75px 15px 15px;
+            }
+            .top-bar {
+                padding: 12px 15px;
+            }
+            .search-box {
+                width: 180px;
+            }
+            .user-details {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .search-box {
+                display: none;
+            }
+            .language-selector .lang-btn {
+                padding: 4px 10px;
+                font-size: 10px;
+            }
+        }
+        
+        /* ==================== RTL SPECIFIC ==================== */
+        body.rtl .sidebar-menu li a {
+            flex-direction: row-reverse;
+        }
     </style>
     <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
-<body class="ltr">
-<div class="top-bar">
-    <div class="top-bar-left">
-        <button class="menu-toggle" onclick="openSidebar()">☰</button>
-        <div class="language-selector">
-            <button class="lang-btn" data-lang="en" onclick="setLanguage('en')">🇬🇧 EN</button>
-            <button class="lang-btn" data-lang="ar" onclick="setLanguage('ar')">🇸🇪 عربي</button>
-            <button class="lang-btn" data-lang="fr" onclick="setLanguage('fr')">🇫🇷 FR</button>
-        </div>
-    </div>
-    <div class="page-title" id="pageTitle">📋 Clinic Dashboard</div>
-    <div class="top-bar-right">
-        <button class="home-icon" onclick="goHome()" id="homeBtn">🏠 Home</button>
-        <form action="<?php echo e(route('logout')); ?>" method="POST" style="display: inline;">
-            <?php echo csrf_field(); ?>
-            <button type="submit" class="login-icon" id="loginBtn">🚪 Logout</button>
-        </form>
-    </div>
-</div>
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-<div class="sidebar" id="sidebar">
-    <div style="text-align: center; margin-bottom: 25px;">
-        <!-- استخدام أيقونة بدلاً من الصورة -->
-        <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #2563eb, #1e40af); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto;">
-            <i class="fas fa-hospital-user" style="font-size: 35px; color: white;"></i>
-        </div>
-        <h2 style="font-size: 20px; margin-top: 5px; background: linear-gradient(135deg, #fff, #bfdbfe); -webkit-background-clip: text; background-clip: text; color: transparent;">MediEase Clinic</h2>
-    </div>
-    <ul>
-     <li>
-    <a href="<?php echo e(route('clinic.doctors.index')); ?>" class="<?php echo e(request()->routeIs('clinic.doctors*') ? 'active' : ''); ?>" id="menuDoctors">
-        👨‍⚕️ Manage Doctors
-    </a>
-</li>
-<li>
-    <a href="<?php echo e(route('clinic.patients.index')); ?>">👥 Manage Patients</a>  <!-- Changed here -->
-</li>
-<li>
-    <a href="<?php echo e(route('clinic.appointments.index')); ?>">📅 Manage Appointments</a>
-</li>
-<li>
-    <a href="<?php echo e(route('clinic.invoices.index')); ?>">📄 Patient Invoices</a>
-</li>
-<li>
-    <a href="<?php echo e(route('clinic.statistics.index')); ?>">📊 Statistics</a>
-</li>
+<body>
 
-<li>
-    <a href="<?php echo e(route('clinic.settings.index')); ?>">⚙️ Setting</a>
-</li>
-<li>
-    <a href="<?php echo e(route('clinic.announcements.index')); ?>"> 📢Ad</a>
-</li>
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="logo-icon">
+            <i class="fas fa-stethoscope"></i>
+        </div>
+        <h2>MediEase Clinic</h2>
+        <p>Healthcare Management</p>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href="<?php echo e(route('clinic.dashboard')); ?>" id="menuDashboard" class="<?php echo e(request()->routeIs('clinic.dashboard') ? 'active' : ''); ?>"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="<?php echo e(route('clinic.doctors.index')); ?>" id="menuDoctors" class="<?php echo e(request()->routeIs('clinic.doctors*') ? 'active' : ''); ?>"><i class="fas fa-user-md"></i> Doctors</a></li>
+        <li><a href="<?php echo e(route('clinic.patients.index')); ?>" id="menuPatients" class="<?php echo e(request()->routeIs('clinic.patients*') ? 'active' : ''); ?>"><i class="fas fa-users"></i> Patients</a></li>
+        <li><a href="<?php echo e(route('clinic.appointments.index')); ?>" id="menuAppointments" class="<?php echo e(request()->routeIs('clinic.appointments*') ? 'active' : ''); ?>"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+        <li><a href="<?php echo e(route('clinic.invoices.index')); ?>" id="menuInvoices" class="<?php echo e(request()->routeIs('clinic.invoices*') ? 'active' : ''); ?>"><i class="fas fa-file-invoice"></i> Invoices</a></li>
+        <li><a href="<?php echo e(route('clinic.statistics.index')); ?>" id="menuStats" class="<?php echo e(request()->routeIs('clinic.statistics*') ? 'active' : ''); ?>"><i class="fas fa-chart-line"></i> Statistics</a></li>
+        <li><a href="<?php echo e(route('clinic.reports.index')); ?>" id="menuReports" class="<?php echo e(request()->routeIs('clinic.reports*') ? 'active' : ''); ?>"><i class="fas fa-chart-bar"></i> Reports</a></li>
+        <li><a href="<?php echo e(route('clinic.announcements.index')); ?>" id="menuAnnouncements" class="<?php echo e(request()->routeIs('clinic.announcements*') ? 'active' : ''); ?>"><i class="fas fa-bullhorn"></i> Announcements</a></li>
+        <li><a href="<?php echo e(route('clinic.settings.index')); ?>" id="menuSettings" class="<?php echo e(request()->routeIs('clinic.settings*') ? 'active' : ''); ?>"><i class="fas fa-cog"></i> Settings</a></li>
+        <li><a href="<?php echo e(route('clinic.subscription.plans')); ?>" id="menuSubscription" class="<?php echo e(request()->routeIs('clinic.subscription*') ? 'active' : ''); ?>"><i class="fas fa-credit-card"></i> Subscription</a></li>
+        <li class="logout-item">
+            <form action="<?php echo e(route('logout')); ?>" method="POST" id="logout-form" style="display: none;">
+                <?php echo csrf_field(); ?>
+            </form>
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </li>
     </ul>
 </div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+    <div class="top-bar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="globalSearch" placeholder="Search...">
+        </div>
+        <div class="language-selector">
+            <button class="lang-btn" data-lang="en" onclick="setLanguage('en')">EN</button>
+            <button class="lang-btn" data-lang="ar" onclick="setLanguage('ar')">AR</button>
+            <button class="lang-btn" data-lang="fr" onclick="setLanguage('fr')">FR</button>
+        </div>
+    </div>
+    <div class="top-bar-right">
+        <div class="notification-icon" onclick="window.location.href='<?php echo e(route('clinic.notifications.index')); ?>'">
+            <i class="fas fa-bell"></i>
+            <span class="badge" id="notifBadge">0</span>
+        </div>
+        <div class="user-info">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-details">
+                <h4 id="userName">Hello, <?php echo e(Auth::user()->name ?? 'Admin'); ?></h4>
+                <p id="userRole">Clinic Admin</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
 <div class="main-content">
+    <?php if(session('success')): ?>
+        <div class="alert-success">
+            <i class="fas fa-check-circle"></i> <?php echo e(session('success')); ?>
+
+        </div>
+    <?php endif; ?>
+    <?php if(session('error')): ?>
+        <div class="alert-error">
+            <i class="fas fa-exclamation-circle"></i> <?php echo e(session('error')); ?>
+
+        </div>
+    <?php endif; ?>
+    <?php if(session('warning')): ?>
+        <div class="alert-warning">
+            <i class="fas fa-exclamation-triangle"></i> <?php echo e(session('warning')); ?>
+
+        </div>
+    <?php endif; ?>
+    <?php if(session('info')): ?>
+        <div class="alert-info">
+            <i class="fas fa-info-circle"></i> <?php echo e(session('info')); ?>
+
+        </div>
+    <?php endif; ?>
     <?php echo $__env->yieldContent('content'); ?>
 </div>
+
 <script>
+    // Add Font Awesome if missing
+    if (!document.querySelector('link[href*="font-awesome"]')) {
+        var faLink = document.createElement('link');
+        faLink.rel = 'stylesheet';
+        faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
+        document.head.appendChild(faLink);
+    }
+    
+    // Translations
     const translations = {
         en: {
-            pageTitle: "📋 Clinic Dashboard", homeBtn: "🏠 Home", loginBtn: "🚪 Logout",
-            notifLabel: "Notifications", welcomeTitle: "Welcome to Clinic Dashboard ✨",
-            welcomeSub: "Clinic Management System Overview",
-            cardDoctors: "👨‍⚕️ Total Doctors", cardPatients: "👥 Total Patients",
-            cardAppointments: "📅 Total Appointments", cardPending: "⏳ Pending Appointments",
-            appointmentsTitle: "📋 Recent Clinic Appointments",
-            thPatient: "Patient", thDoctor: "Doctor", thSpecialty: "Specialty", thDay: "Day", thTime: "Time", thStatus: "Status", thAction: "Action",
-            reviewsTitle: "⭐ Patient Reviews & Feedback", avgLabel: "Average Rating:",
-            notificationsTitle: "🔔 Clinic Notifications", clearBtn: "🗑️ Clear All Notifications",
-            statusPending: "Pending", statusAccepted: "Accepted", statusRejected: "Rejected",
-            btnAccept: "Accept", btnReject: "Reject", deleteReview: "Delete",
-            noReviews: "📭 No patient reviews yet.", noNotifications: "📭 No new notifications",
-            menuDashboard: "📊 Dashboard", menuDoctors: "👨‍⚕️ Manage Doctors",
-            menuPatients: "👥 Manage Patients", menuAppointments: "📅 Manage Appointments",
-            menuInvoices: "📄 Patient Invoices", menuStats: "📈 Statistics",
-            menuReports: "📋 Reports", menuSettings: "⚙️ System Settings"
+            menuDashboard: "Dashboard",
+            menuDoctors: "Doctors",
+            menuPatients: "Patients",
+            menuAppointments: "Appointments",
+            menuInvoices: "Invoices",
+            menuStats: "Statistics",
+            menuReports: "Reports",
+            menuAnnouncements: "Announcements",
+            menuSettings: "Settings",
+            menuSubscription: "Subscription"
         },
         ar: {
-            pageTitle: "📋 لوحة تحكم العيادة", homeBtn: "🏠 الرئيسية", loginBtn: "🚪 تسجيل خروج",
-            notifLabel: "الإشعارات", welcomeTitle: "مرحباً بك في لوحة التحكم ✨",
-            welcomeSub: "نظرة عامة على نظام إدارة العيادة",
-            cardDoctors: "👨‍⚕️ إجمالي الأطباء", cardPatients: "👥 إجمالي المرضى",
-            cardAppointments: "📅 إجمالي المواعيد", cardPending: "⏳ المواعيد المعلقة",
-            appointmentsTitle: "📋 أحدث مواعيد العيادة",
-            thPatient: "المريض", thDoctor: "الطبيب", thSpecialty: "التخصص", thDay: "اليوم", thTime: "الوقت", thStatus: "الحالة", thAction: "إجراء",
-            reviewsTitle: "⭐ تقييمات المرضى", avgLabel: "متوسط التقييم:",
-            notificationsTitle: "🔔 إشعارات العيادة", clearBtn: "🗑️ مسح الكل",
-            statusPending: "معلق", statusAccepted: "مقبول", statusRejected: "مرفوض",
-            btnAccept: "قبول", btnReject: "رفض", deleteReview: "حذف",
-            noReviews: "📭 لا توجد تقييمات", noNotifications: "📭 لا توجد إشعارات",
-            menuDashboard: "📊 لوحة التحكم", menuDoctors: "👨‍⚕️ إدارة الأطباء",
-            menuPatients: "👥 إدارة المرضى", menuAppointments: "📅 إدارة المواعيد",
-            menuInvoices: "📄 فواتير المرضى", menuStats: "📈 الإحصائيات",
-            menuReports: "📋 التقارير", menuSettings: "⚙️ الإعدادات"
+            menuDashboard: "لوحة التحكم",
+            menuDoctors: "الأطباء",
+            menuPatients: "المرضى",
+            menuAppointments: "المواعيد",
+            menuInvoices: "الفواتير",
+            menuStats: "الإحصائيات",
+            menuReports: "التقارير",
+            menuAnnouncements: "الإعلانات",
+            menuSettings: "الإعدادات",
+            menuSubscription: "الاشتراك"
         },
         fr: {
-            pageTitle: "📋 Tableau de bord clinique", homeBtn: "🏠 Accueil", loginBtn: "🚪 Déconnexion",
-            notifLabel: "Notifications", welcomeTitle: "Bienvenue au Tableau de Bord ✨",
-            welcomeSub: "Aperçu du système de gestion",
-            cardDoctors: "👨‍⚕️ Total Médecins", cardPatients: "👥 Total Patients",
-            cardAppointments: "📅 Total Rendez-vous", cardPending: "⏳ En attente",
-            appointmentsTitle: "📋 Derniers Rendez-vous",
-            thPatient: "Patient", thDoctor: "Médecin", thSpecialty: "Spécialité", thDay: "Jour", thTime: "Heure", thStatus: "Statut", thAction: "Action",
-            reviewsTitle: "⭐ Avis des Patients", avgLabel: "Note moyenne:",
-            notificationsTitle: "🔔 Notifications", clearBtn: "🗑️ Effacer tout",
-            statusPending: "En attente", statusAccepted: "Accepté", statusRejected: "Rejeté",
-            btnAccept: "Accepter", btnReject: "Rejeter", deleteReview: "Supprimer",
-            noReviews: "📭 Aucun avis", noNotifications: "📭 Aucune notification",
-            menuDashboard: "📊 Tableau de bord", menuDoctors: "👨‍⚕️ Gérer médecins",
-            menuPatients: "👥 Gérer patients", menuAppointments: "📅 Gérer rendez-vous",
-            menuInvoices: "📄 Factures", menuStats: "📈 Statistiques",
-            menuReports: "📋 Rapports", menuSettings: "⚙️ Paramètres"
+            menuDashboard: "Tableau de bord",
+            menuDoctors: "Médecins",
+            menuPatients: "Patients",
+            menuAppointments: "Rendez-vous",
+            menuInvoices: "Factures",
+            menuStats: "Statistiques",
+            menuReports: "Rapports",
+            menuAnnouncements: "Annonces",
+            menuSettings: "Paramètres",
+            menuSubscription: "Abonnement"
         }
     };
+    
     let currentLang = localStorage.getItem('clinicLanguage') || 'en';
+    
     function setLanguage(lang) {
         currentLang = lang;
         const t = translations[lang];
-        document.getElementById('pageTitle').innerText = t.pageTitle;
-        document.getElementById('homeBtn').innerHTML = t.homeBtn;
-        document.getElementById('loginBtn').innerHTML = t.loginBtn;
-        document.getElementById('menuDashboard').innerHTML = t.menuDashboard;
-        document.getElementById('menuDoctors').innerHTML = t.menuDoctors;
-        document.getElementById('menuPatients').innerHTML = t.menuPatients;
-        document.getElementById('menuAppointments').innerHTML = t.menuAppointments;
-        document.getElementById('menuInvoices').innerHTML = t.menuInvoices;
-        document.getElementById('menuStats').innerHTML = t.menuStats;
-        document.getElementById('menuReports').innerHTML = t.menuReports;
-        document.getElementById('menuSettings').innerHTML = t.menuSettings;
+        
+        document.getElementById('menuDashboard').innerHTML = '<i class="fas fa-tachometer-alt"></i> ' + t.menuDashboard;
+        document.getElementById('menuDoctors').innerHTML = '<i class="fas fa-user-md"></i> ' + t.menuDoctors;
+        document.getElementById('menuPatients').innerHTML = '<i class="fas fa-users"></i> ' + t.menuPatients;
+        document.getElementById('menuAppointments').innerHTML = '<i class="fas fa-calendar-check"></i> ' + t.menuAppointments;
+        document.getElementById('menuInvoices').innerHTML = '<i class="fas fa-file-invoice"></i> ' + t.menuInvoices;
+        document.getElementById('menuStats').innerHTML = '<i class="fas fa-chart-line"></i> ' + t.menuStats;
+        document.getElementById('menuReports').innerHTML = '<i class="fas fa-chart-bar"></i> ' + t.menuReports;
+        document.getElementById('menuAnnouncements').innerHTML = '<i class="fas fa-bullhorn"></i> ' + t.menuAnnouncements;
+        document.getElementById('menuSettings').innerHTML = '<i class="fas fa-cog"></i> ' + t.menuSettings;
+        document.getElementById('menuSubscription').innerHTML = '<i class="fas fa-credit-card"></i> ' + t.menuSubscription;
+        
         document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelector(`.lang-btn[data-lang="${lang}"]`).classList.add('active');
-        if(lang === 'ar') document.body.classList.add('rtl');
-        else document.body.classList.remove('rtl');
+        
+        if (lang === 'ar') {
+            document.body.classList.add('rtl');
+        } else {
+            document.body.classList.remove('rtl');
+        }
+        
         localStorage.setItem('clinicLanguage', lang);
-        window.dispatchEvent(new Event('languageChanged'));
+        
+        // Trigger language change event for child components
+        window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang: lang } }));
     }
-    function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('active'); }
-    function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('active'); }
-    function goHome() { window.location.href = "<?php echo e(route('home')); ?>"; }
+    
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+    }
+    
+    function closeSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+    }
+    
+    // Update notification badge
+    function updateNotificationBadge(count) {
+        const badge = document.getElementById('notifBadge');
+        if (badge) {
+            badge.innerText = count || 0;
+            badge.style.display = count > 0 ? 'flex' : 'none';
+        }
+    }
+    
+    // Close sidebar when clicking overlay
+    document.getElementById('sidebarOverlay')?.addEventListener('click', closeSidebar);
+    
+    // Initialize language
     setLanguage(currentLang);
+    
+    // Global search functionality
+    document.getElementById('globalSearch')?.addEventListener('keyup', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        window.dispatchEvent(new CustomEvent('globalSearch', { detail: { search: searchTerm } }));
+    });
 </script>
 <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>

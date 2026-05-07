@@ -356,4 +356,8 @@ class InvoiceController extends Controller
             ]);
         }
     }
+    public function pendingApproval()
+    {
+        return view('clinic.pending_approval');
+    }
 }

@@ -411,5 +411,8 @@ class AppointmentController extends Controller
         $appointment->delete();
         return response()->json(['success' => true]);
     }
-    
+    public function pendingApproval()
+    {
+        return view('clinic.pending_approval');
+    }
 }

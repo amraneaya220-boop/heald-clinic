@@ -70,4 +70,8 @@ class NotificationController extends Controller
         $count = Notification::whereIn('doctor_id', $doctorIds)->where('is_read', false)->count();
         return response()->json(['success' => true, 'count' => $count]);
     }
+    public function pendingApproval()
+    {
+        return view('clinic.pending_approval');
+    }
 }

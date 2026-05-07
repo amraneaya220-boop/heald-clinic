@@ -272,12 +272,21 @@
 <a href="<?php echo e(route('admin.ads.index')); ?>" class="<?php echo e(request()->routeIs('admin.ads*') ? 'active' : ''); ?>">
     <i class="fas fa-ad"></i> <span id="nav_ads">Ads</span>
 </a>
+
 <a href="<?php echo e(route('admin.payments.index')); ?>" class="<?php echo e(request()->routeIs('admin.payments*') ? 'active' : ''); ?>">
     <i class="fas fa-credit-card"></i> <span id="nav_payments">Payments</span>
 </a>
 <a href="<?php echo e(route('admin.settings.index')); ?>" class="<?php echo e(request()->routeIs('admin.settings') ? 'active' : ''); ?>">
     <i class="fas fa-cog"></i> <span id="nav_settings">Settings</span>
 </a>
+<a href="<?php echo e(route('admin.clinics.pending')); ?>">
+        <i class="fas fa-clock"></i>
+        <span>Pending Approvals</span>
+        <?php if($pendingCount ?? 0 > 0): ?>
+            <span class="badge"><?php echo e($pendingCount); ?></span>
+        <?php endif; ?>
+    </a>
+
 
 </a>
     </div>

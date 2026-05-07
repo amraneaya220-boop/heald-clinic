@@ -136,4 +136,5 @@ class StatisticsController extends Controller
             'top_doctors' => $topDoctors
         ]);
     }
+    
 }

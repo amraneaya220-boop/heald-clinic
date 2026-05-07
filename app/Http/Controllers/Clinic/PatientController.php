@@ -222,4 +222,8 @@ class PatientController extends Controller
             'errors'  => $errors,
         ], $status);
     }
+    public function pendingApproval()
+    {
+        return view('clinic.pending_approval');
+    }
 }

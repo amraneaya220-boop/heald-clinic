@@ -129,4 +129,5 @@ class ReportController extends Controller
         
         return response()->json(['success' => true, 'data' => $data]);
     }
+   
 }

@@ -76,7 +76,7 @@
 </head>
 <body>
     <div class="sidebar">
-        <h2>🏥 HealD Clinic</h2>
+        <h2>🏥 MediEase Clinic</h2>
         <ul>
             <li><a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">📊 Dashboard</a></li>
             <li><a href="{{ route('doctors.index') }}" class="{{ request()->routeIs('doctors.*') ? 'active' : '' }}">👨‍⚕️ Manage Doctors</a></li>

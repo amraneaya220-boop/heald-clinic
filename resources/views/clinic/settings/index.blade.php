@@ -2,386 +2,477 @@
 @extends('clinic.layouts.clinic')
 
 @section('title', 'System Settings')
+
 @section('content')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.main-content {
-    padding: 25px 35px;
-}
-
-/* ========== HEADER ========== */
-.header {
-    background: white;
-    padding: 20px 25px;
-    border-radius: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    margin-bottom: 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-.header h1 {
-    color: #0f2b5c;
-    font-size: 24px;
-    margin-bottom: 5px;
-}
-
-.header p {
-    color: #64748b;
-    font-size: 13px;
-}
-
-/* ========== CLINIC IMAGE SECTION ========== */
-.clinic-image-section {
-    background: white;
-    border-radius: 24px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    margin-bottom: 30px;
-    display: flex;
-    gap: 30px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.image-preview {
-    flex: 1;
-    min-width: 200px;
-    text-align: center;
-}
-
-.image-preview img {
-    width: 100%;
-    max-width: 280px;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    border: 3px solid #e2e8f0;
-}
-
-.image-upload {
-    flex: 2;
-}
-
-.image-upload h3 {
-    color: #0f2b5c;
-    margin-bottom: 15px;
-    font-size: 18px;
-}
-
-.image-upload input {
-    padding: 12px;
-    border: 2px solid #e2e8f0;
-    border-radius: 16px;
-    width: 100%;
-    margin-bottom: 15px;
-}
-
-.upload-btn {
-    background: #2563eb;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 30px;
-    cursor: pointer;
-    font-weight: 500;
-}
-
-.upload-btn:hover {
-    background: #1e40af;
-}
-
-/* ========== CARDS ========== */
-.settings-card {
-    background: white;
-    border-radius: 24px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    margin-bottom: 30px;
-}
-
-.settings-card h2 {
-    color: #0f2b5c;
-    font-size: 20px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.settings-card .subtitle {
-    color: #64748b;
-    font-size: 13px;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #e2e8f0;
-}
-
-/* ========== GRID ========== */
-.grid-2 {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-}
-
-.input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.input-group label {
-    font-weight: 600;
-    color: #1e293b;
-    font-size: 14px;
-}
-
-.input-group input,
-.input-group select,
-.input-group textarea {
-    padding: 12px 15px;
-    border: 2px solid #e2e8f0;
-    border-radius: 16px;
-    font-size: 14px;
-    transition: all 0.2s;
-    outline: none;
-}
-
-.input-group input:focus,
-.input-group select:focus,
-.input-group textarea:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-}
-
-/* ========== SCHEDULE TABLE ========== */
-.schedule-table-container {
-    overflow-x: auto;
-    margin-top: 20px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-th {
-    background: #f8fafc;
-    color: #1e3a8a;
-    font-weight: 600;
-}
-
-.delete-btn {
-    background: #fee2e2;
-    color: #dc2626;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 12px;
-    transition: all 0.2s;
-}
-
-.delete-btn:hover {
-    background: #dc2626;
-    color: white;
-}
-
-/* ========== PRICING & SERVICES ========== */
-.pricing-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-}
-
-.price-item {
-    background: #f8fafc;
-    padding: 15px;
-    border-radius: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid #e2e8f0;
-}
-
-.price-item .info b {
-    color: #0f2b5c;
-    display: block;
-}
-
-.price-item .info small {
-    color: #64748b;
-    font-size: 11px;
-}
-
-.price-item input {
-    width: 120px;
-    padding: 8px;
-    border-radius: 12px;
-    border: 1px solid #cbd5e1;
-    font-weight: 500;
-    text-align: right;
-}
-
-.price-item input:focus {
-    border-color: #2563eb;
-    outline: none;
-}
-
-.service-item {
-    background: #f8fafc;
-    padding: 15px;
-    border-radius: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    border: 1px solid #e2e8f0;
-}
-
-.service-item .info b {
-    color: #0f2b5c;
-}
-
-.service-item .info small {
-    color: #64748b;
-    font-size: 11px;
-}
-
-.service-price {
-    font-weight: bold;
-    color: #2563eb;
-    font-size: 18px;
-}
-
-/* ========== TAGS ========== */
-.tags-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.tag {
-    background: #dbeafe;
-    color: #1e3a8a;
-    padding: 8px 15px;
-    border-radius: 30px;
-    font-size: 14px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.tag button {
-    background: #ef4444;
-    color: white;
-    border: none;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-.tag button:hover {
-    background: #dc2626;
-}
-
-/* ========== BUTTONS ========== */
-.btn-primary {
-    background: #2563eb;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 30px;
-    cursor: pointer;
-    font-weight: 500;
-    margin-top: 15px;
-    transition: all 0.2s;
-}
-
-.btn-primary:hover {
-    background: #1e40af;
-    transform: scale(1.02);
-}
-
-.btn-success {
-    background: #16a34a;
-    color: white;
-    border: none;
-    padding: 14px;
-    border-radius: 30px;
-    cursor: pointer;
-    font-weight: 600;
-    width: 100%;
-    font-size: 16px;
-    margin-top: 20px;
-    transition: all 0.2s;
-}
-
-.btn-success:hover {
-    background: #15803d;
-}
-
-/* ========== EMERGENCY BANNER ========== */
-.emergency-banner {
-    background: linear-gradient(135deg, #fef3c7, #fffbeb);
-    border-left: 4px solid #f59e0b;
-    padding: 15px 20px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.emergency-banner span {
-    color: #b45309;
-    font-weight: 500;
-}
-
-@media (max-width: 768px) {
-    .main-content {
+    /* ========== MAIN CONTENT ========== */
+    .settings-wrapper {
+        padding: 0;
+    }
+    
+    /* ========== HEADER ========== */
+    .header-section {
+        background: white;
+        padding: 20px 25px;
+        border-radius: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        border: 1px solid #f1f5f9;
+    }
+    
+    .header-section h1 {
+        color: #1e293b;
+        font-size: 24px;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .header-section h1 i {
+        color: #6366f1;
+    }
+    
+    .header-section p {
+        color: #64748b;
+        font-size: 13px;
+    }
+    
+    /* ========== EMERGENCY BANNER ========== */
+    .emergency-banner {
+        background: linear-gradient(135deg, #fef3c7, #fffbeb);
+        border-left: 4px solid #f59e0b;
+        padding: 12px 20px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .emergency-banner span {
+        color: #b45309;
+        font-weight: 500;
+    }
+    
+    /* ========== SETTINGS CARDS ========== */
+    .settings-card {
+        background: white;
+        border-radius: 24px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s;
+    }
+    
+    .settings-card:hover {
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    }
+    
+    .settings-card h2 {
+        color: #1e293b;
+        font-size: 18px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .settings-card h2 i {
+        color: #6366f1;
+    }
+    
+    .settings-card .subtitle {
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #eef2ff;
+    }
+    
+    /* ========== CLINIC IMAGE SECTION ========== */
+    .clinic-image-section {
+        background: white;
+        border-radius: 24px;
+        padding: 25px;
+        margin-bottom: 30px;
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid #f1f5f9;
+    }
+    
+    .image-preview {
+        flex: 1;
+        min-width: 200px;
+        text-align: center;
+    }
+    
+    .image-preview img {
+        width: 100%;
+        max-width: 280px;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        border: 3px solid #eef2ff;
+    }
+    
+    .image-upload {
+        flex: 2;
+    }
+    
+    .image-upload h3 {
+        color: #1e293b;
+        margin-bottom: 15px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .image-upload input {
+        padding: 12px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        width: 100%;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+    
+    .upload-btn {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .upload-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+    }
+    
+    /* ========== GRID ========== */
+    .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .input-group label {
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 13px;
+    }
+    
+    .input-group input,
+    .input-group select,
+    .input-group textarea {
+        padding: 12px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        font-size: 14px;
+        transition: all 0.2s;
+        outline: none;
+        font-family: inherit;
+    }
+    
+    .input-group input:focus,
+    .input-group select:focus,
+    .input-group textarea:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+    }
+    
+    /* ========== SCHEDULE TABLE ========== */
+    .schedule-table-container {
+        overflow-x: auto;
+        margin-top: 20px;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th, td {
+        padding: 14px 12px;
+        text-align: left;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 13px;
+    }
+    
+    th {
+        background: #f8fafc;
+        color: #1e293b;
+        font-weight: 600;
+        font-size: 12px;
+    }
+    
+    .delete-btn {
+        background: #fee2e2;
+        color: #dc2626;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    
+    .delete-btn:hover {
+        background: #dc2626;
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    /* ========== PRICING GRID ========== */
+    .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .price-item {
+        background: #f8fafc;
         padding: 15px;
+        border-radius: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #eef2ff;
+        transition: all 0.2s;
     }
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+    
+    .price-item:hover {
+        background: #eef2ff;
     }
-}
-
-@media print {
-    .header, .settings-card, .btn-primary, .btn-success {
-        display: none !important;
+    
+    .price-item .info b {
+        color: #1e293b;
+        display: block;
+        font-size: 14px;
     }
-}
+    
+    .price-item .info small {
+        color: #64748b;
+        font-size: 11px;
+    }
+    
+    .price-item input {
+        width: 120px;
+        padding: 8px 12px;
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        font-weight: 500;
+        text-align: right;
+        transition: all 0.2s;
+    }
+    
+    .price-item input:focus {
+        border-color: #6366f1;
+        outline: none;
+    }
+    
+    /* ========== SERVICE ITEMS ========== */
+    .service-item {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        border: 1px solid #eef2ff;
+        transition: all 0.2s;
+    }
+    
+    .service-item:hover {
+        background: #eef2ff;
+    }
+    
+    .service-item .info b {
+        color: #1e293b;
+        font-size: 14px;
+    }
+    
+    .service-item .info small {
+        color: #64748b;
+        font-size: 11px;
+    }
+    
+    .service-price {
+        font-weight: bold;
+        color: #6366f1;
+        font-size: 18px;
+    }
+    
+    /* ========== TAGS ========== */
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 15px;
+    }
+    
+    .tag {
+        background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+        color: #4f46e5;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .tag button {
+        background: #ef4444;
+        color: white;
+        border: none;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.2s;
+    }
+    
+    .tag button:hover {
+        background: #dc2626;
+        transform: scale(1.05);
+    }
+    
+    /* ========== BUTTONS ========== */
+    .btn-primary {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: 600;
+        margin-top: 15px;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+    }
+    
+    .btn-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: 600;
+        width: 100%;
+        font-size: 16px;
+        margin-top: 20px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16,185,129,0.3);
+    }
+    
+    /* ========== RTL SUPPORT ========== */
+    body.rtl th, body.rtl td {
+        text-align: right;
+    }
+    
+    body.rtl .settings-card h2 {
+        border-left: none;
+        border-right: 4px solid #f59e0b;
+        padding-left: 0;
+        padding-right: 10px;
+    }
+    
+    body.rtl .price-item input {
+        text-align: left;
+    }
+    
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+        .clinic-image-section {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .grid-2 {
+            grid-template-columns: 1fr;
+        }
+        
+        .pricing-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .price-item {
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+        }
+        
+        .service-item {
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+        }
+    }
+    
+    @media print {
+        .header-section, .settings-card, .btn-primary, .btn-success {
+            display: none !important;
+        }
+    }
 </style>
 
-<div class="main-content">
-    <div class="header">
+<div class="settings-wrapper">
+    <!-- HEADER SECTION -->
+    <div class="header-section">
         <div>
-            <h1>⚙️ System Settings</h1>
+            <h1><i class="fas fa-cog"></i> System Settings</h1>
             <p>Configure clinic information, pricing, and services</p>
         </div>
         <div id="emergencyBadge" class="emergency-banner">
-            <span>🚨 Emergency Mode: <strong id="emergencyStatus">OFF</strong></span>
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Emergency Mode: <strong id="emergencyStatus">OFF</strong></span>
         </div>
     </div>
 
@@ -391,16 +482,20 @@ th {
             <img id="clinicImage" src="https://placehold.co/400x250/e2e8f0/64748b?text=Clinic+Photo" alt="Clinic Image">
         </div>
         <div class="image-upload">
-            <h3>🏥 Clinic Photo</h3>
+            <h3><i class="fas fa-image"></i> Clinic Photo</h3>
             <input type="file" id="imageUpload" accept="image/*">
-            <button class="upload-btn" onclick="uploadClinicImage()">📸 Upload Image</button>
-            <p style="font-size: 12px; color: #64748b; margin-top: 10px;">Recommended size: 800x450px</p>
+            <button class="upload-btn" onclick="uploadClinicImage()">
+                <i class="fas fa-upload"></i> Upload Image
+            </button>
+            <p style="font-size: 12px; color: #64748b; margin-top: 10px;">
+                <i class="fas fa-info-circle"></i> Recommended size: 800x450px
+            </p>
         </div>
     </div>
 
     <!-- CLINIC INFORMATION -->
     <div class="settings-card">
-        <h2>🏥 Clinic Information</h2>
+        <h2><i class="fas fa-hospital"></i> Clinic Information</h2>
         <div class="subtitle">Basic clinic details displayed everywhere</div>
         <div class="grid-2">
             <div class="input-group">
@@ -431,11 +526,14 @@ th {
                 <textarea id="description" rows="3" placeholder="Brief description about the clinic..."></textarea>
             </div>
         </div>
+        <button class="btn-primary" onclick="updateClinicInfo()">
+            <i class="fas fa-save"></i> Update Clinic Info
+        </button>
     </div>
 
     <!-- WORKING SCHEDULE -->
     <div class="settings-card">
-        <h2>📅 Working Schedule</h2>
+        <h2><i class="fas fa-calendar-alt"></i> Working Schedule</h2>
         <div class="subtitle">Define working days and hours</div>
         <div class="grid-2">
             <div class="input-group"><label>Date</label><input type="date" id="scheduleDate"></div>
@@ -444,20 +542,30 @@ th {
             <div class="input-group"><label>Break Start</label><input type="time" id="breakStart"></div>
             <div class="input-group"><label>Break End</label><input type="time" id="breakEnd"></div>
         </div>
-        <button class="btn-primary" onclick="addSchedule()">+ Add Schedule</button>
+        <button class="btn-primary" onclick="addSchedule()">
+            <i class="fas fa-plus"></i> Add Schedule
+        </button>
         <div class="schedule-table-container">
             <table id="scheduleTable">
                 <thead>
-                    <tr><th>Date</th><th>Start</th><th>End</th><th>Break</th><th>Action</th></tr>
+                    <tr>
+                        <th>Date</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Break</th>
+                        <th>Action</th>
+                    </tr>
                 </thead>
-                <tbody id="scheduleBody"></tbody>
-             </table>
+                <tbody id="scheduleBody">
+                    <tr><td colspan="5" style="text-align: center;">Loading schedules...</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- SERVICES PRICING (MODIFIABLE) -->
+    <!-- SERVICES PRICING -->
     <div class="settings-card">
-        <h2>💰 Services Pricing</h2>
+        <h2><i class="fas fa-tags"></i> Services Pricing</h2>
         <div class="subtitle">Modify fixed medical services prices (DZD)</div>
         <div class="pricing-grid">
             <div class="price-item">
@@ -477,36 +585,46 @@ th {
                 <input type="number" id="scanPrice" placeholder="Price in DZD" step="1000">
             </div>
         </div>
-        <p style="font-size: 12px; color: #64748b; margin-top: 12px;">✏️ Click on any price field to modify, then click "Save Prices".</p>
-        <button class="btn-primary" onclick="updatePrices()">💾 Save Prices</button>
+        <p style="font-size: 12px; color: #64748b; margin-top: 12px;">
+            <i class="fas fa-edit"></i> Click on any price field to modify, then click "Save Prices".
+        </p>
+        <button class="btn-primary" onclick="updatePrices()">
+            <i class="fas fa-save"></i> Save Prices
+        </button>
     </div>
 
     <!-- CUSTOM SERVICES -->
     <div class="settings-card">
-        <h2>➕ Custom Services</h2>
+        <h2><i class="fas fa-plus-circle"></i> Custom Services</h2>
         <div class="subtitle">Add your own clinic services with prices</div>
         <div class="grid-2">
             <div class="input-group"><label>Service Name</label><input type="text" id="serviceName" placeholder="e.g., Blood Test"></div>
             <div class="input-group"><label>Price (DA)</label><input type="number" id="servicePrice" placeholder="Price"></div>
             <div class="input-group"><label>Description</label><input type="text" id="serviceDesc" placeholder="Brief description"></div>
         </div>
-        <button class="btn-primary" onclick="addCustomService()">+ Add Service</button>
+        <button class="btn-primary" onclick="addCustomService()">
+            <i class="fas fa-plus"></i> Add Service
+        </button>
         <div id="servicesList" style="margin-top: 15px;"></div>
     </div>
 
-    <!-- SPECIALTIES -->
+    <!-- MEDICAL SPECIALTIES -->
     <div class="settings-card">
-        <h2>🩺 Medical Specialties</h2>
+        <h2><i class="fas fa-stethoscope"></i> Medical Specialties</h2>
         <div class="subtitle">Specialties offered at the clinic</div>
         <div class="grid-2">
             <div class="input-group"><label>New Specialty</label><input type="text" id="specialtyInput" placeholder="e.g., Cardiology"></div>
         </div>
-        <button class="btn-primary" onclick="addSpecialty()">+ Add Specialty</button>
+        <button class="btn-primary" onclick="addSpecialty()">
+            <i class="fas fa-plus"></i> Add Specialty
+        </button>
         <div id="specialsList" class="tags-container"></div>
     </div>
 
-    <!-- SAVE BUTTON -->
-    <button class="btn-success" onclick="saveAllSettings()">💾 Save All Settings</button>
+    <!-- SAVE ALL BUTTON -->
+    <button class="btn-success" onclick="saveAllSettings()">
+        <i class="fas fa-save"></i> Save All Settings
+    </button>
 </div>
 
 <script>
@@ -548,11 +666,6 @@ th {
                 
                 // Update emergency badge
                 updateEmergencyBadge();
-                
-                // Update sidebar clinic name
-                if (data.clinic.name) {
-                    document.querySelector('.sidebar h2').innerText = data.clinic.name;
-                }
             }
         } catch (error) {
             console.error('Error loading settings:', error);
@@ -573,12 +686,14 @@ th {
                             <small>${escapeHtml(service.description || 'No description')}</small>
                         </div>
                         <div class="service-price">${parseInt(service.price).toLocaleString()} DA</div>
-                        <button class="delete-btn" onclick="deleteService(${service.id})">Delete</button>
+                        <button class="delete-btn" onclick="deleteService(${service.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
                     </div>
                 `;
             });
         } else {
-            container.innerHTML = '<p style="color: #64748b; text-align: center;">No custom services added yet.</p>';
+            container.innerHTML = '<p style="color: #64748b; text-align: center; padding: 20px;"><i class="fas fa-info-circle"></i> No custom services added yet.</p>';
         }
     }
     
@@ -595,12 +710,14 @@ th {
                         <td>${escapeHtml(schedule.start_time)}</td>
                         <td>${escapeHtml(schedule.end_time)}</td>
                         <td>${escapeHtml(schedule.break_start || '---')} - ${escapeHtml(schedule.break_end || '---')}</td>
-                        <td><button class="delete-btn" onclick="deleteSchedule(${schedule.id})">Delete</button></td>
-                    </table>
+                        <td><button class="delete-btn" onclick="deleteSchedule(${schedule.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button></td>
+                    </tr>
                 `;
             });
         } else {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No schedules added yet.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 30px;"><i class="fas fa-calendar"></i> No schedules added yet.</td></tr>';
         }
     }
     
@@ -613,11 +730,13 @@ th {
             specialties.forEach((specialty, index) => {
                 container.innerHTML += `
                     <span class="tag">
-                        ${escapeHtml(specialty.name || specialty)}
+                        <i class="fas fa-stethoscope"></i> ${escapeHtml(specialty.name || specialty)}
                         <button onclick="deleteSpecialty(${specialty.id || index})">✕</button>
                     </span>
                 `;
             });
+        } else {
+            container.innerHTML = '<p style="color: #64748b; padding: 10px;"><i class="fas fa-info-circle"></i> No specialties added yet.</p>';
         }
     }
     
@@ -643,7 +762,7 @@ th {
             });
             const result = await response.json();
             if (result.success) {
-                alert('✅ Clinic info updated successfully!');
+                showToast('Clinic info updated successfully!');
                 loadSettings();
             } else {
                 alert('Error updating clinic info');
@@ -674,7 +793,7 @@ th {
             });
             const result = await response.json();
             if (result.success) {
-                alert('✅ Prices updated successfully!');
+                showToast('Prices updated successfully!');
             } else {
                 alert('Error updating prices');
             }
@@ -708,7 +827,7 @@ th {
             });
             const result = await response.json();
             if (result.success) {
-                alert('✅ Service added successfully!');
+                showToast('Service added successfully!');
                 document.getElementById('serviceName').value = '';
                 document.getElementById('servicePrice').value = '';
                 document.getElementById('serviceDesc').value = '';
@@ -735,7 +854,7 @@ th {
                 });
                 const result = await response.json();
                 if (result.success) {
-                    alert('✅ Service deleted successfully!');
+                    showToast('Service deleted successfully!');
                     loadSettings();
                 } else {
                     alert('Error deleting service');
@@ -779,7 +898,7 @@ th {
             });
             const result = await response.json();
             if (result.success) {
-                alert('✅ Schedule added successfully!');
+                showToast('Schedule added successfully!');
                 document.getElementById('scheduleDate').value = '';
                 document.getElementById('startTime').value = '';
                 document.getElementById('endTime').value = '';
@@ -808,7 +927,7 @@ th {
                 });
                 const result = await response.json();
                 if (result.success) {
-                    alert('✅ Schedule deleted successfully!');
+                    showToast('Schedule deleted successfully!');
                     loadSettings();
                 } else {
                     alert('Error deleting schedule');
@@ -840,7 +959,7 @@ th {
             });
             const result = await response.json();
             if (result.success) {
-                alert('✅ Specialty added successfully!');
+                showToast('Specialty added successfully!');
                 document.getElementById('specialtyInput').value = '';
                 loadSettings();
             } else {
@@ -865,7 +984,7 @@ th {
                 });
                 const result = await response.json();
                 if (result.success) {
-                    alert('✅ Specialty deleted successfully!');
+                    showToast('Specialty deleted successfully!');
                     loadSettings();
                 } else {
                     alert('Error deleting specialty');
@@ -900,8 +1019,8 @@ th {
             });
             const result = await response.json();
             if (result.success) {
-                document.getElementById('clinicImage').src = result.image_url;
-                alert('✅ Image uploaded successfully!');
+                document.getElementById('clinicImage').src = result.image_url + '?t=' + new Date().getTime();
+                showToast('Image uploaded successfully!');
             } else {
                 alert('Error uploading image');
             }
@@ -915,7 +1034,23 @@ th {
     async function saveAllSettings() {
         await updateClinicInfo();
         await updatePrices();
-        alert('✅ All settings saved successfully!');
+        showToast('All settings saved successfully!');
+    }
+    
+    // ========== SHOW TOAST ==========
+    function showToast(message) {
+        let toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toastContainer';
+            toastContainer.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 1000;';
+            document.body.appendChild(toastContainer);
+        }
+        const toast = document.createElement('div');
+        toast.style.cssText = 'background: #1e293b; color: white; padding: 12px 20px; border-radius: 50px; margin-top: 10px; font-size: 13px; animation: slideIn 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.1);';
+        toast.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+        toastContainer.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
     }
     
     // ========== UPDATE EMERGENCY BADGE ==========
@@ -956,4 +1091,17 @@ th {
         loadSettings();
     });
 </script>
+
+<style>
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+</style>
 @endsection
